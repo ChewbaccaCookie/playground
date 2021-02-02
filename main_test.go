@@ -9,12 +9,17 @@ import (
 // TEST_DRIVERS: sqlite, mysql, postgres, sqlserver
 
 func TestGORM(t *testing.T) {
-	user := User{Name: "jinzhu"}
+	createUser := User{Name: "jinzhu"}
 
-	DB.Create(&user)
+	DB.Create(&createUser)
 
 	var result User
-	if err := DB.First(&result, user.ID).Error; err != nil {
+	if err := DB.First(&result, createUser.ID).Error; err != nil {
 		t.Errorf("Failed, got error: %v", err)
 	}
+
+	// Preload nested
+	var user User
+	DB.Preload(clause.Associations).Preload("Languages." + clause.Associations).Find(&user)
+
 }
